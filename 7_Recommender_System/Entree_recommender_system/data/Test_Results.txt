@@ -1,0 +1,47 @@
+The best length that the user can expect to reach his restaurant.
+
+From file session.1996Q3:
+
+Line 462: 123C to 501-
+Original length = 5
+Our model's length = 3
+
+Line 269: 464C to 581-
+Original length = 7
+Our model's length = 3
+
+Line 278: 573C to 541
+Original length = 13
+Our model's length = 3
+
+Line 280: 197C to 60
+Ori Len = 7
+Our len = 3
+
+Line 316: 38C to 216
+Ori Len = 14
+Our len = 3
+
+Line 336: 178C to 260
+Ori Len = 6
+Our len = 3
+
+Line 385: 640C to 148
+Ori Len = 4
+Our len = 1
+
+Line 399: 162C to 603
+Ori Len = 3
+Our len = 3
+
+16/Sep/1996:09:48:15 	www-n1.proxy.aol.com	44C	496L	192L	192
+Ori Len = 3
+Our len = 3
+
+18/Sep/1996:14:57:06 	ihgw1.att.com	294C	457N	457N	230L	1L	1S	1S	585L	103L	103L	259L	259
+Ori Len = 11
+Our len = 3
+
+23/Sep/1996:14:35:55 	p486b.imagematrix.com	224C	671L	407L	407
+Ori Len = 3
+Our Len = 3

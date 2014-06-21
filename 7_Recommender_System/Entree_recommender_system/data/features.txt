@@ -1,0 +1,257 @@
+000	A
+001	Authentic
+002	Afghanistan
+003	African
+004	After Hours Dining
+005	American (Contemporary)
+006	American (New)
+007	American (Regional)
+008	American (Traditional)
+009	American
+010	An Historic Spot
+011	An Out Of The Way Find
+012	Argentinean
+013	Armenian
+014	Asian
+015	Austrian
+016	Bakeries
+017	Bar-B-Q
+018	Belgian
+019	Brasserie
+020	Brazilian
+021	Buffet Dining
+022	Burmese
+023	Burritos
+024	Business Scene
+025	Creative
+026	Cab
+027	Cafe/Espresso Bars
+028	Cafe/Garden Dining
+029	Cafeterias
+030	Cajun
+031	Californian
+032	Cambodian
+033	Canadian
+034	Caribbean
+035	Carry in Wine and Beer
+036	Catering for Special Events
+037	Caviar
+038	Central
+039	Chinese
+040	Classic Hotel Dining
+041	Coffee Houses
+042	Coffee Shops
+043	Coffee and Dessert
+044	Coffeehouses
+045	Continental
+046	Credit cards are not accepted
+047	Creole
+048	Cuban
+049	Czech
+050	Poor Decor
+051	Fair Decor
+052	Good Decor
+053	Excellent Decor
+054	Extraordinary Decor
+055	Near-perfect Decor
+056	Good Decor
+057	Dancing
+058	Deli
+059	Delivery Available
+060	Dim Sum
+061	Diners
+062	Dining After the Theater
+063	Dining Outdoors
+064	Down-Home
+065	Down-Home Creole
+066	Early Dining
+067	Eastern European
+068	Eclectic
+069	Egyptian
+070	English
+071	Entertainment
+072	Ethiopian
+073	Fair Food
+074	Good Food
+075	Excellent Food
+076	Extraordinary Food
+077	Near-perfect Food
+078	Good Food
+079	Fabulous Views
+080	Fabulous Wine Lists
+081	Fast Food
+082	Filipino
+083	Fine for Dining Alone
+084	Focus on Dessert
+085	Fondue
+086	For the Young and Young at Heart
+087	Fountain and Ice Cream
+088	Franco-Russian
+089	Frankfurters
+090	French (New)
+091	French
+092	French Bistro
+093	French Classic
+094	French Contemporary
+095	French Nouvelle
+096	French-Japanese
+097	Game
+098	German
+099	Good Out of Town Business
+100	Good for Younger Kids
+101	Great Place to Meet for a Drink
+102	Great for People Watching
+103	Greek
+104	Grills
+105	Guatemalan
+106	Hamburgers & Beer
+107	Hamburgers
+108	Happy Hour
+109	Haute Creole
+110	Haute New Orleans
+111	Health Conscious Menus
+112	Health Food
+113	High Tea
+114	Hip Place To Be
+115	Hot Dogs
+116	Hungarian
+117	Indian
+118	Indonesian
+119	International
+120	Irish
+121	Italian (North & South)
+122	Italian (North
+123	Italian (Northern)
+124	Italian (Southern)
+125	Italian
+126	Italian Nuova Cucina
+127	Jamaican
+128	Japanese
+129	Jewish
+130	Korean
+131	Kosher
+132	Late Night Menu
+133	Latin
+134	Lebanese
+135	Lithuanian
+136	Little Known But Well Liked
+137	Long Drive
+138	Margaritas
+139	Malaysian
+140	Mediterranean
+141	Menus in Braille
+142	Mexican
+143	Middle Eastern
+144	Moroccan
+145	N
+146	Need To Dress
+147	Nicaraguan
+148	No Liquor Served
+149	No Reservations
+150	No Smoking Allowed
+151	Noodle Houses
+152	Noodle Shops
+153	Old World Cafe Charm
+154	Omelettes
+155	On the Beach
+156	Open for Breakfast
+157	Open on Mondays
+158	Open on Sundays
+159	Other Quick Food
+160	Oyster Bars
+161	below $15
+162	below $15
+163	below $15
+164	$15-$30
+165	$15-$30
+166	$15-$30
+167	$30-$50
+168	$30-$50
+169	over $50
+170	$15-$30
+171	Pacific New Wave
+172	Pacific Rim
+173	Pancakes
+174	Parking/Valet
+175	Parties and Occasions
+176	Pastries
+177	Pastry Shops
+178	People Keep Coming Back
+179	Persian
+180	Peruvian
+181	Picnics
+182	Pizza
+183	Pizzerias
+184	Place for Singles
+185	Po' Boys
+186	Polish
+187	Polynesian
+188	Portuguese
+189	Power Brokers
+190	Pre-theater Dining
+191	Private Parties
+192	Private Rooms Available
+193	Prix Fixe Menus
+194	Pub Feel
+195	Puerto Rican
+196	Quiet for Conversation
+197	Quirky
+198	Relaxed Senior Scene
+199	Romanian
+200	Romantic
+201	Roumanian
+202	Russian
+203	Fair Service
+204	Good Service
+205	Excellent Service
+206	Extraordinary Service
+207	Near-perfect Service
+208	Good Service
+209	Salvadoran
+210	Scandinavian
+211	Scottish
+212	Seafood
+213	See the Game
+214	Short Drive
+215	Singles Scene
+216	Soul Food
+217	Soulfood
+218	South American
+219	Southeast Asian
+220	Southern
+221	Southern Comfort
+222	Southwestern
+223	Spanish
+224	Special Brunch Menu
+225	Steakhouses
+226	Sushi
+227	Swiss
+228	Swiss-French
+229	Traditional
+230	Tacos
+231	Takeout Available
+232	Tapas
+233	Tex Mex
+234	Tex-Mex
+235	Thai
+236	Tibetan
+237	Tourist Appeal
+238	Tunisian
+239	Turkish
+240	Ukrainian
+241	Ukranian
+242	Up and Coming
+243	Vegetarian
+244	Venezuelan
+245	Very Busy - Reservations a Must
+246	Vietnamese
+247	Walk
+248	Warm spots by the fire
+249	Weekend Brunch
+250	Weekend Dining
+251	Weekend Jazz Brunch
+252	Weekend Lunch
+253	Wheelchair Access
+254	Wine and Beer
+255	Yogurt Bar
+256	Yugoslavian

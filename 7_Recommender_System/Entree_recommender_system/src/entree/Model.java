@@ -1,0 +1,495 @@
+package entree;
+
+/*
+ * If the restaurant id input is -1, then read the attribute values of the ideal restaurant
+ * entered by the user at the beginning.
+ * The user gives the weights to each of the 6 attributes initially. These weights are used for both the similarity functions. 
+ * Two kinds of similarity measures have been defined.
+ * Similarity with flag = 0, is used only at the time the user enters the program.
+ * Similarity with flag = 1, otherwise.
+ * 0 - cheaper
+ * 1 - nicer
+ * 2 - traditional
+ * 3 - creative
+ * 4 - lively
+ * 5 - quieter
+ */
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.HashMap;
+
+public class Model {
+
+	/*
+	 * Shivam's Parameters
+	 */
+	public static String[] feature_map = new String[257];
+	public static double[][] S_data = new double[676][6];
+	public static int[][] cuisine_data = new int[676][30];//Assuming no restaurant has more than 20 fields
+	public static double cheap = (double) 0.3,wt_cheap = 1, nice = (double) 0.3,wt_nice = 1;
+	public static double traditional = (double) 0.3, wt_traditional = 1, creative = (double) 0.3, wt_creative = 1;
+	public static double lively = (double) 0.3,wt_lively = 1, quiet = (double) 0.3, wt_quiet = 1;
+	public static double[] numeric_normalization = new double[6];
+	
+	/*
+	 * Rajan's Parameters
+	 */
+	public static int NUM_REST = 676; 
+	public static int[] restaurants = new int[NUM_REST];
+	public static int[] ranked = new int[NUM_REST];
+	public static int[] visited = new int[NUM_REST];
+	public static double[][] disSim = new double[NUM_REST][NUM_REST];
+	public static int NUM_DISP = 10;
+	public static int NUM_SIM_DISP = 2;
+	static int[] indexes = new int[NUM_DISP];
+	int ranksDone = NUM_DISP;
+	
+	public static double[] disSim_cheaper_compromise = new double[NUM_REST];
+	public static double[] disSim_nicer_compromise = new double[NUM_REST];
+	public static double[] disSim_traditional_compromise = new double[NUM_REST];
+	public static double[] disSim_creative_compromise = new double[NUM_REST];
+	public static double[] disSim_lively_compromise = new double[NUM_REST];
+	public static double[] disSim_quietness_compromise = new double[NUM_REST];
+	
+	public int[] initialize() throws IOException {
+		//Shivam's code begins
+		//Take the file input of the Skanda's file.
+		read_S_file();
+		get_normalization();
+		//Take cuisine data input from file.
+		read_Cuisine_file();
+		read_feature_map();
+		//take_inputs();
+		
+		//Shivam's code ends
+		
+		for(int i=0; i<NUM_REST; ++i) visited[i] = 0;
+		
+		findsim();
+		for(int i=0; i<NUM_DISP; ++i) indexes[i] = ranked[i];
+		
+		return indexes;
+	}
+	
+	public double[][] getMDSInput(int[] indexes) {
+		double[][] out = new double[indexes.length][indexes.length];
+		for(int i=0; i<indexes.length; ++i) {
+			for(int j=0; j<indexes.length; ++j) {
+				out[i][j] = disSim[indexes[i]][indexes[j]];
+			}
+		}
+		
+		return out;
+	}
+	
+	public int[] getNextRests(int rest) {
+		
+		if(rest == -1) return null;
+		
+		for(int i=0; i<NUM_DISP; ++i) if(indexes[i] != rest) visited[indexes[i]] = 1;
+		
+		indexes[0] = rest;
+		
+		int[] similarRests = getMostSim(rest);
+		for(int i=1; i<NUM_SIM_DISP; ++i) {
+			indexes[i] = similarRests[i-1];
+		}
+		
+		for(int i=1+NUM_SIM_DISP; i<NUM_DISP; ++i) {
+			indexes[i] = ranked[ranksDone];
+			ranksDone++;
+			if(visited[indexes[i]] == 1) i--;
+			
+			if(ranksDone >= NUM_REST) throw new ArrayIndexOutOfBoundsException();
+		}
+		
+		return indexes;		
+	}
+	
+	int[] getMostSim(int rest) {
+		// Returns those restaurants most similar to the input restaurant, not considering those already displayed
+		double[] rest_dissim_copy = new double[NUM_REST];
+		int locations[] = new int[NUM_REST];
+		for(int i=0; i<NUM_REST; ++i) {
+			rest_dissim_copy[i] = disSim[rest][i];
+			locations[i] = i;
+		}
+		
+		int found = 0, i=0;
+		int[] out_arr = new int[NUM_SIM_DISP];
+		while(found != NUM_SIM_DISP) {
+			double min = Double.MAX_VALUE; int minidx = i;
+			for(int j=i+1; j<NUM_REST; ++j) {
+				if(rest_dissim_copy[j] < min) {
+					minidx = j;
+					min = rest_dissim_copy[j];
+				}
+			}
+			double temp = rest_dissim_copy[i];
+			rest_dissim_copy[i] = rest_dissim_copy[minidx];
+			rest_dissim_copy[minidx] = temp;
+			int temp2 = locations[i];
+			locations[i] = locations[minidx];
+			locations[minidx] = temp2;
+			
+			if(visited[locations[i]] != 1) {
+				out_arr[found] = locations[i];
+				found++;
+			}
+			
+			++i;
+		}
+		
+		return out_arr;
+	}
+	
+	//Compromised attribute restaurants
+	
+	//The following compromises on each attribute and selects the top restaurant obtained from each. Hence, total 6 restaurants are returned.
+	int[] getMostSimCompromised(int rest) {
+		//Returns one restaurant each, obtained by compromising every attribute.
+		/* 0 - cheaper
+		 * 1 - nicer
+		 * 2 - traditional
+		 * 3 - creative
+		 * 4 - lively
+		 * 5 - quieter
+		*/
+		//Fill the Dissimilarity matrix for all attributes
+		
+		//Fill the compromised dissimilarity matrices
+		//Compromise Cheapness
+		double temp_wt = wt_cheap;
+		wt_cheap = 0;
+		for(int i=0;i<NUM_REST;i++){
+			if(rest!=i)
+				disSim_cheaper_compromise[i] = disimilarity(i,rest,1);
+		}
+		wt_cheap = temp_wt;
+
+		//Compromise niceness
+		temp_wt = wt_nice;
+		wt_nice = 0;
+		for(int i=0;i<NUM_REST;i++){
+			if(rest!=i)
+				disSim_nicer_compromise[i] = disimilarity(i,rest,1);
+		}
+		wt_nice = temp_wt;
+		
+		//Compromise traditional attribute
+		temp_wt = wt_traditional;
+		wt_traditional = 0;
+		for(int i=0;i<NUM_REST;i++){
+			if(rest!=i)
+				disSim_traditional_compromise[i] = disimilarity(i,rest,1);
+		}
+		wt_traditional = temp_wt;
+		
+		//Compromise creative attribute
+		temp_wt = wt_creative;
+		wt_creative = 0;
+		for(int i=0;i<NUM_REST;i++){
+			if(rest!=i)
+				disSim_creative_compromise[i] = disimilarity(i,rest,1);
+		}
+		wt_creative= temp_wt;
+		
+		//Compromise liveness attribute
+		temp_wt = wt_lively;
+		wt_lively = 0;
+		for(int i=0;i<NUM_REST;i++){
+			if(rest!=i)
+				disSim_lively_compromise[i] = disimilarity(i,rest,1);
+		}
+		wt_lively= temp_wt;
+
+		//Compromise quietness attribute
+		temp_wt = wt_quiet;
+		wt_quiet = 0;
+		for(int i=0;i<NUM_REST;i++){
+			if(rest!=i)
+				disSim_quietness_compromise[i] = disimilarity(i,rest,1);
+		}
+		wt_quiet= temp_wt;
+		
+		
+		//Find the most similar restaurant for each attribute
+		
+		int[] out_arr = new int[NUM_SIM_DISP];
+		int cheapCompBestRest = 0, 
+				niceCompBestRest = 0, 
+				tradCompBestRest = 0, 
+				creatCompBestRest = 0,
+				liveCompBestRest = 0,
+				quietCompBestRest = 0;
+		double cheapCompDissim=Double.MAX_VALUE,niceCompDissim=Double.MAX_VALUE,tradCompDissim=Double.MAX_VALUE,creatCompDissim=Double.MAX_VALUE,liveCompDissim=Double.MAX_VALUE,quietCompDissim=Double.MAX_VALUE;
+		
+		for(int i=0;i<disSim.length;i++){
+			if(disSim_cheaper_compromise[i]<cheapCompDissim &&disSim_cheaper_compromise[i]!=0){
+				cheapCompDissim = disSim_cheaper_compromise[i];
+				cheapCompBestRest = i;
+			}
+			if(disSim_nicer_compromise[i]<niceCompDissim &&disSim_nicer_compromise[i]!=0){
+				niceCompDissim = disSim_nicer_compromise[i];
+				niceCompBestRest = i;
+			}
+			if(disSim_traditional_compromise[i]<tradCompDissim &&disSim_traditional_compromise[i]!=0){
+				tradCompDissim = disSim_traditional_compromise[i];
+				tradCompBestRest = i;
+			}
+			if(disSim_creative_compromise[i]<creatCompDissim &&disSim_creative_compromise[i]!=0){
+				creatCompDissim = disSim_creative_compromise[i];
+				creatCompBestRest = i;
+			}
+			if(disSim_lively_compromise[i]<liveCompDissim &&disSim_lively_compromise[i]!=0){
+				liveCompDissim = disSim_lively_compromise[i];
+				liveCompBestRest = i;
+			}
+			if(disSim_quietness_compromise[i]<quietCompDissim &&disSim_quietness_compromise[i]!=0){
+				quietCompDissim = disSim_quietness_compromise[i];
+				quietCompBestRest = i;
+			}
+		}
+		out_arr[0] = cheapCompBestRest;
+		out_arr[1] = niceCompBestRest;
+		out_arr[2] = tradCompBestRest;
+		out_arr[3] = creatCompBestRest;
+		out_arr[4] = liveCompBestRest;
+		out_arr[5] = quietCompBestRest;
+		return out_arr;
+	}
+	
+	//Compromised restaurants end
+	
+	public void findsim() {
+		// Finds ranks of restaurants and sorts, putting sorted list in "ranked"
+		// Also fills up the "disSim" array, with disSim[i][j] = dissimilarity between rests i and js
+		double[] inputRest_disSim = new double[676];
+		
+		for(int i=0;i<676;i++){
+			inputRest_disSim[i] = disimilarity(i,-1,0);
+		}
+		
+		//Note: Here we sort in order of increasing dissimilarity which is same as decreasing similarity.
+		//Sort the list and fill "ranked" with the sorted restaurants
+		for(int i=0;i<675;i++){
+			double min = inputRest_disSim[i];
+			int minIndex = i;
+			for(int j=i+1;j<676;j++){
+				if(inputRest_disSim[j]<min){
+					minIndex = j;
+					min = inputRest_disSim[j];
+				}
+			}
+			//If maxIndex is different, then swap
+			double temp = inputRest_disSim[i]; 
+			inputRest_disSim[i] = inputRest_disSim[minIndex];
+			inputRest_disSim[minIndex] = temp;
+			int temp2 = ranked[i];
+			ranked[i] = ranked[minIndex];
+			ranked[minIndex] = temp2;
+		}
+		
+		//Now fill the ranked list
+		
+		for(int i=0;i<676;i++){
+			disSim[i][i] = 0;
+			for(int j=0;j<i;j++){
+				disSim[j][i] = disSim[i][j] = disimilarity(i,j,1);
+			}
+		}
+	}
+	
+	void display(int[] indexes) {
+		// Display those restaurants from "restaurants" array whose indexes are present in "indexes" array 
+	}
+	
+	int getClick() {
+		return 0;
+	}
+
+//Shivam's functions defined below	
+	private void read_feature_map() throws IOException {
+		
+		BufferedReader reader = new BufferedReader(new FileReader("C:/Users/Rajan/workspace/MBRProject/data/features.txt"));
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			feature_map[Integer.parseInt(line.substring(0,line.indexOf('\t')))] = line.substring(line.indexOf('\t')+1);
+		}
+		
+	}
+
+	private void get_normalization() {
+		for(int k=0;k<6;k++){
+			double normalized_term = (double)0.0;
+			for(int i=1;i<676;i++){
+				for(int j=0;j<i;j++){
+					normalized_term+= Math.abs(S_data[i][k]-S_data[j][k]);
+				}
+			}
+			numeric_normalization[k] = normalized_term;
+		}
+	}
+
+	public boolean isNumeric(String str)  
+	{  
+	  try  
+	  {  
+	    @SuppressWarnings("unused")
+		double d = Double.parseDouble(str);  
+	  }  
+	  catch(NumberFormatException nfe)  
+	  {  
+	    return false;  
+	  }  
+	  return true;  
+	}
+	
+	public void read_S_file() throws IOException{
+		BufferedReader reader = new BufferedReader(new FileReader("C:/Users/Rajan/workspace/MBRProject/data/S_data.txt"));
+		String line = null;
+		int counter = 0;
+		while ((line = reader.readLine()) != null) {
+			String[] splitStr = line.split("\\s+");
+			S_data[counter][0] = Float.parseFloat(splitStr[0]);
+			S_data[counter][1] = Float.parseFloat(splitStr[1]);
+			S_data[counter][2] = Float.parseFloat(splitStr[2]);
+			S_data[counter][3] = Float.parseFloat(splitStr[3]);
+			S_data[counter][4] = Float.parseFloat(splitStr[4]);
+			S_data[counter][5] = Float.parseFloat(splitStr[5]);
+			counter++;
+		}
+	}
+	public void read_Cuisine_file() throws IOException{
+		BufferedReader reader = new BufferedReader(new FileReader("C:/Users/Rajan/workspace/MBRProject/data/chicago.txt"));
+		String line = null;
+		int counter = 0;
+		while ((line = reader.readLine()) != null) {
+			String[] splitStr = line.split("\\s+");
+			for(int i=2;i<32;i++){
+				if(i<splitStr.length){
+					if(isNumeric(splitStr[i]))
+						cuisine_data[counter][i-2] = Integer.parseInt(splitStr[i]);
+				}
+				else{
+					cuisine_data[counter][i-2] = -1;
+				}
+			}
+			counter++;
+		}
+	}
+
+	//Take ideal restaurant attributes
+	public void take_inputs(){
+		Scanner in = new Scanner(System.in);
+		System.out.println("Input the ideal restaurant attributes:");
+		System.out.print("Cheap: "); cheap = in.nextFloat();
+		System.out.print("Nice: "); nice = in.nextFloat();
+		System.out.print("Traditional: "); traditional = in.nextFloat();
+		System.out.print("creative: "); creative = in.nextFloat();
+		System.out.print("Lively: "); lively = in.nextFloat();
+		System.out.print("Quiet: "); quiet = in.nextFloat();
+		
+		System.out.println("Input the attributes weights:");
+		System.out.print("Weight for Cheap: "); wt_cheap = in.nextFloat();
+		System.out.print("Weight for Nice: "); wt_nice = in.nextFloat();
+		System.out.print("Weight for Traditional: "); wt_traditional = in.nextFloat();
+		System.out.print("Weight for creative: "); wt_creative = in.nextFloat();
+		System.out.print("Weight for Lively: "); wt_lively = in.nextFloat();
+		System.out.print("Weight for Quiet: "); wt_quiet = in.nextFloat();
+	}
+	
+	
+	//Here, take only the six attribute values for measuring the similarity between rest1 and rest2.
+	//If either of the rest1 or rest2 is -1, then check for the ideal restaurant values.
+	public double disimilarity(int rest1, int rest2, int flag)
+	{
+		if(rest1<-1||rest2<-1){
+			System.out.println("Enter correct restaurant IDs. Exiting.");
+			System.exit(1);
+		}
+		
+		double cheap1,cheap2, nice1, nice2, traditional1, traditional2, creative1,creative2,lively1, lively2, quieter1, quieter2;
+		double disSim_cheap,disSim_nice,disSim_trad,disSim_creative,disSim_lively,disSim_quieter;
+		if(rest1==rest2)
+			return 0;
+		
+		else if(rest1==-1||rest2==-1){
+			if(rest1==-1){
+				cheap1 = cheap; nice1 = nice; traditional1 = traditional;
+				creative1 = creative; lively1 = lively; quieter1 = quiet;
+				
+				cheap2 = S_data[rest2][0];nice2 = S_data[rest2][1];traditional2 = S_data[rest2][2];
+				creative2 = S_data[rest2][3];lively2 = S_data[rest2][4];quieter2 = S_data[rest2][5];
+				
+			}
+			else{
+				cheap2 = cheap; nice2 = nice; traditional2 = traditional; 
+				creative2 = creative; lively2 = lively; quieter2 = quiet;
+				
+				cheap1 = S_data[rest1][0];nice1 = S_data[rest1][1];traditional1 = S_data[rest1][2];
+				creative1 = S_data[rest1][3];lively1 = S_data[rest1][4];quieter1 = S_data[rest1][5];
+			}
+		}
+		
+		else{
+			cheap1 = S_data[rest1][0];nice1 = S_data[rest1][1];traditional1 = S_data[rest1][2];
+			creative1 = S_data[rest1][3];lively1 = S_data[rest1][4];quieter1 = S_data[rest1][5];
+			
+			cheap2 = S_data[rest2][0];nice2 = S_data[rest2][1];traditional2 = S_data[rest2][2];
+			creative2 = S_data[rest2][3];lively2 = S_data[rest2][4];quieter2 = S_data[rest2][5];
+		}
+		disSim_cheap = Math.abs(cheap1 - cheap2)/(numeric_normalization[0]/(338*675));
+		disSim_nice = Math.abs(nice1 - nice2)/(numeric_normalization[1]/(338*675));
+		disSim_trad = Math.abs(traditional1 - traditional2)/(numeric_normalization[2]/(338*675));
+		disSim_creative = Math.abs(creative1 - creative2)/(numeric_normalization[3]/(338*675));
+		disSim_lively = Math.abs(lively1 - lively2)/(numeric_normalization[4]/(338*675));
+		disSim_quieter = Math.abs(quieter1 - quieter2)/(numeric_normalization[5]/(338*675));
+		
+		double disSim_Numerator = (disSim_cheap*wt_cheap + disSim_nice*wt_nice + disSim_trad*wt_traditional+disSim_creative*wt_creative+disSim_lively*wt_lively+disSim_quieter*wt_quiet);
+		if(flag==0||rest1==-1||rest2==-1){//Only numeric dissimilarity
+			return disSim_Numerator/(wt_cheap+wt_nice+wt_traditional+wt_creative+wt_lively+wt_quiet);
+		}
+		else{
+			int intersection_count = intersection_cuisine(rest1,rest2);
+			int union_count = union_cuisine(rest1,rest2);
+			return (disSim_Numerator+((union_count - intersection_count)/(float)union_count))/(wt_cheap+wt_nice+wt_traditional+wt_creative+wt_lively+wt_quiet+1);//extra 1 for categorical variable
+		}
+	}
+
+	private double intersection_cuisine(int rest1, int rest2) {
+		int intersection_count = 0;
+		HashMap<Integer, Integer> h = new HashMap<Integer,Integer>();
+		for(int i=0;i<30;i++){
+			h.put(cuisine_data[rest1][i],1);
+		}
+		for(int i=0;i<30;i++){
+			if((cuisine_data[rest2][i]!=-1)&&h.containsKey(cuisine_data[rest2][i])){
+				//System.out.println("Feature matched:"+cuisine_data[rest2][i]);
+				//System.out.println("Feature is:"+feature_map[cuisine_data[rest2][i]]);
+				intersection_count+=1;
+			}
+		}
+		return intersection_count;
+	}
+	private double union_cuisine(int rest1, int rest2) {
+		int union_count = 0;
+		HashMap<Integer, Integer> h = new HashMap<Integer,Integer>();
+		for(int i=0;i<30;i++){
+			h.put(cuisine_data[rest1][i],1);
+			union_count+=1;
+		}
+		for(int i=0;i<30;i++){
+			if((cuisine_data[rest2][i]!=-1)&&!h.containsKey(cuisine_data[rest2][i])){
+				//System.out.println("Feature matched:"+cuisine_data[rest2][i]);
+				//System.out.println("Feature is:"+feature_map[cuisine_data[rest2][i]]);
+				union_count+=1;
+			}
+		}
+		return union_count;
+	}
+	// Shivam's functions end here	
+		
+}

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo Compiling...
+make
+
+echo Starting execution...
+
+for i in {0..13}
+do
+	echo $i
+	
+	./main ../../data/cam$i/img_0003.jpg ../../cameras/cam$i.cam ../../data/cam$j/img_0003.jpg ../../cameras/cam$j.cam disp$i$j.jpg pc$i$j.txt qmat$i$j.xml
+done

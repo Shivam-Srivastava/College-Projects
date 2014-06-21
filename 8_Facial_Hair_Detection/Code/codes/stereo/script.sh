@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo Compiling...
+make
+
+echo Starting execution...
+
+for i in {0..0}
+do
+	echo $i
+	j=$(($i+1))
+	
+	./main ../../data/cam$i/img_0003.jpg ../../cameras/cam$i.cam ../../data/cam$j/img_0003.jpg ../../cameras/cam$j.cam ndisp$i$j.jpg npc$i$j.txt nqmat$i$j.xml
+done

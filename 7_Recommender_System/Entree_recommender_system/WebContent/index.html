@@ -1,0 +1,195 @@
+<html>
+
+<head>
+
+<title>Entree - Restaurant critiques</title>
+
+<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="canvasjs-1.4.0/canvasjs.min.js"></script>
+<script type="text/javascript">
+    window.onload = function() {
+
+        var points = [
+            {x: 1, y: 10},
+            {x: 4, y: 7}
+        ];
+
+        var chart = new CanvasJS.Chart("chartContainer",
+        {
+            title:{
+                text: "MDS of recommended restaurants"
+            },
+            data: [
+            {
+                click: function(e) {
+                    $.ajax({
+                        url: './getrests',
+                        type: 'GET',
+                        data: {"point": e.dataPoint.x + "," + e.dataPoint.y},
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        async: false,
+                        success: function(result) {
+                            // change the points variable depending on "result"
+                            while(points.length > 0)
+                                points.pop();
+                            for(var i=0; i<result.points.length; ++i) {
+                                points.push({x: parseFloat(result.points[i].x),
+                                    y: parseFloat(result.points[i].y),
+                                    ID: result.points[i].restaurantID,                                    chp: result.points[i].cheaper,
+                                    trp: result.points[i].traditional,
+                                    nip: result.points[i].nicer,
+                                    crp: result.points[i].creative,
+                                    qup: result.points[i].quiet,
+                                    lip: result.points[i].lively,
+                                    cuisine: result.points[i].cuisines
+                                });
+                            }
+                            chart.render();
+                        }
+                    }); 
+                },
+                mouseover: function(e) {
+                    $("#chp").html(e.dataPoint.chp.toFixed(7));
+                    $("#trp").html(e.dataPoint.trp.toFixed(7));
+                    $("#nip").html(e.dataPoint.nip.toFixed(7));
+                    $("#crp").html(e.dataPoint.crp.toFixed(7));
+                    $("#qup").html(e.dataPoint.qup.toFixed(7));
+                    $("#lip").html(e.dataPoint.lip.toFixed(7));
+                    $("#cuisineContainer").html("<b>ID: " + e.dataPoint.ID + "</b>\n" + e.dataPoint.cuisine);
+                },
+                type: "scatter",
+                dataPoints: points
+            }],
+            axisX: {
+                title: "",
+            },
+            axisY: {
+                title: ""
+            },
+            theme: "theme4"
+        });
+      
+        chart.render();
+      
+        $.ajax({
+            url: './getrests',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success: function(result) {
+                while(points.length > 0)
+                    points.pop();
+                for(var i=0; i<result.points.length; ++i) {
+                    points.push({x: parseFloat(result.points[i].x),
+                        y: parseFloat(result.points[i].y),
+                        ID: result.points[i].restaurantID,
+                        chp: result.points[i].cheaper,
+                        trp: result.points[i].traditional,
+                        nip: result.points[i].nicer,
+                        crp: result.points[i].creative,
+                        qup: result.points[i].quiet,
+                        lip: result.points[i].lively,
+                        cuisine: result.points[i].cuisines
+                    });
+                }
+                chart.render();
+            }
+        });
+    }
+</script>
+
+<style type="text/css">
+#wrapper {
+    position: relative;
+    margin: auto;
+    margin-top: 30px;
+}
+#chartContainer {
+    position: relative;
+    margin: auto;
+}
+#attributeContainer {
+    position: relative;
+    top: 20px;
+    margin: auto;
+    width: 750px;
+    height: 25px;
+    text-align: center;
+}
+#cuisineContainer {
+    position: relative;
+    top: 40px;
+    margin: auto;
+    width: 750px;
+    text-align: center;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 15px;
+}
+.attributes {
+    margin: 0;
+    padding: 0;
+}
+td {
+    width: 150px;
+    margin: 0;
+    padding: 0;
+    height: 25px;
+}
+td div {
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+td p {
+    display: inline-block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+#cheap {
+    background-color: green;
+}
+#nice {
+    background-color: blue;
+}
+#trad {
+    background-color: orange;
+}
+#creative {
+    background-color: yellow;
+}
+#lively {
+    background-color: red;
+}
+#quiet {
+    background-color: gray;
+}
+</style>
+
+</head>
+
+<body>
+<div id="wrapper">
+<div id="chartContainer" style="height: 400px; width: 610px"></div>
+<table id="attributeContainer">
+    <tr class="attributes">
+        <td><div id="cheap"></div>cheap: <p id="chp"></p></td>
+        <td><div id="nice"></div>nice: <p id="nip"></p></td>
+        <td><div id="trad"></div>traditional: <p id="trp"></p></td>
+    </tr>
+    <tr class="attributes">
+        <td><div id="creative"></div>creative: <p id="crp"></p></td>
+        <td><div id="lively"></div>lively: <p id="lip"></p></td>
+        <td><div id="quiet"></div>quiet: <p id="qup"></p></td>
+    </tr>
+</table>
+<div id="cuisineContainer"></div>
+</div>
+</body>
+
+</html>

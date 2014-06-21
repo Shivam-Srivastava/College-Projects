@@ -1,0 +1,42 @@
+
+                                                        Project MOTO RACER 
+                                                        By- 
+                                                           Shivam Srivastava (CS10B051)
+                                                           Sudheer Sana (CS10B050)
+                                                           Vikas Neelam (CS10B016)
+
+Aim of the Project: Build a Racing Game similar to another popular game on the Android Platform called "MotoRacer". This game even resembles the video games that    probably many of us have played in our childhood. 
+
+What is this Game all about?
+
+-> The player is riding a bike on a road on which randomly generated cars are also simultaneously driving. The player keeps increasing his speed and keeps dodging the cars for as long as possible. The longer you stay the more the points you collect. The number of points is the number of cars that have passed you by then.
+
+
+What features does this game have?
+
+-> The game can be played in three modes:
+      
+      --- Easy
+      --- Medium
+      --- Hard
+
+      In the EASY version of the game, the biker keeps moving on the road at a constant speed dodging the cars that approach him. This is a naive version of the game.
+      
+      In the MEDIUM version, the extra thing is the increase in the speed of the biker after some predecided steps. After every 25 points that he gains, the speed of the   bike increases.
+      
+      In the HARD version, not only does the speed of the biker increase, the cars that he is supposed to dodge also start moving on the track horizontally and randomly.   The cars move so as to close any open gaps that the biker can take.
+      
+      
+      There are FOUR KEYBOARD CONTROLS that a USER can use. Those are:
+      
+      ->  'a' for left
+      ->  'd' for right
+      ->  'w' for increasing the speed as long as it is kept pressed.
+      ->  's' for putting breaks or rather reducing the speed of the bike.
+      
+      The moment the biker collides with either a car or the wall, the game ends. The collision is captured by pausing the game when the collision occurs. At the end the user's score is displayed.
+      
+In addition to all the above, the game also has a "HELP" screen which describes all that the user might need.
+
+
+

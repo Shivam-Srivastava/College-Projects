@@ -1,0 +1,48 @@
+Jam Player
+==========
+
+JamPlayer is a simple audio player written in Java, using several off-the-shelf libraries. It is currently lacking some important features, like search. Your assignment will be to implement some additional features for this small application.
+
+Odd numbered teams will do Project A, and even numbered teams Project B.
+
+Project A - Search and Play List Generation
+-------------------------------------------
+
+There are two parts to your assignment, searching for songs using a trie (http://en.wikipedia.org/wiki/Trie), and generating a play list using the "0-1 knapsack" (http://en.wikipedia.org/wiki/Knapsack_problem) algorithm.
+
+Project B - Approximate Search
+------------------------------
+
+You will have to implement a BK-Tree[^1] to allow you to search for songs with titles close to search query. As a distance metric for the BK-tree (http://blog.notdot.net/2007/4/Damn-Cool-Algorithms-Part-1-BK-Trees), you can first use Hamming distance, and later implement the Levenshtein edit-distance (http://en.wikipedia.org/wiki/Levenshtein_distance) algorithm. 
+
+Coupling the Search Data-Structure with Application
+---------------------------------------------------
+
+To implement the search part, you will have to first implement a trie or BK-tree. Then, in the "LibraryTableModel" class, replace the Vector<Song> with your data-structure, also implementing the getRows and getValueAt functions. Finally, call the "filter" function from the keyPressed handler of "searchText".
+
+Coupling Knapsack and Playlist Generation
+-----------------------------------------
+
+There is an additional class, PlayListMakerDialog which contains a slider, etc. to choose the desired play list length. Attach an event handler to the "Make!" button, and use the songList to select the required songs and update playlistModel.
+
+Ideas to Improve Your Implementation
+------------------------------------
+
+All of these ideas are optional - they are just here to get you thinking.
+
+* Both trees have a limitation that they search from the beginning of the string. Try to support searching from following words in the song titles, etc. as well. Keep in mind that someone's search query may be two (or more) words as well!
+
+* Try incremental search, wherein the search results update after every character the user enters.
+
+* A limitation of the getValueAt function is that you must retrieve a row from your data one-by-one. You can overcome this obstacle by maintaining a "pointer" to the last element extracted from the tree, and using it to continue your tree-traversal.
+
+* Can you dynamically update the list of songs in the play list? Can you make the updates to the play list set "incremental" in that it doesn't radically change the songs already in the play list?
+
+Additional Resources
+--------------------
+
+* A Flash animation of a Trie: http://blog.ivank.net/trie-in-as3.html 
+* Another article about the BK tree, this one with diagrams: http://kallistec.wordpress.com/2009/08/29/deciding-what-to-watch-on-github/ 
+
+[^1]: In class, we mentioned the KD-tree which is very similar, but different from the BK tree. This is an error on the TA's part; you will need to implement a BK-tree.
+
